@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 import joblib
 import nltk
 from nltk.corpus import stopwords
@@ -9,6 +9,8 @@ import re
 import logging
 import os
 import time
+from bs4 import BeautifulSoup
+import requests
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -94,3 +96,30 @@ def predict_news(news: NewsInput):
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Fake News Detector API. POST /predict with your text."}
+
+
+
+
+
+class ScrapeRequest(BaseModel):
+    url: HttpUrl
+    follow_redirects: bool = True
+
+@app.post("/scrape")
+def scrape_website(req: ScrapeRequest):
+    try:
+        response = requests.get(req.url, allow_redirects=req.follow_redirects, timeout=10)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Remove script and style elements
+    for tag in soup(["script", "style", "noscript"]):
+        tag.extract()
+
+    # Get visible text
+    text = soup.get_text(separator="\n", strip=True)
+
+    return {"text": text}

@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 # Setup CORS
-origins = os.getenv('CORS_ORIGINS', 'http://127.0.0.1:5501,http://localhost:5501', '*').split(',')
+origins = os.getenv('CORS_ORIGINS', 'http://127.0.0.1:5501,http://localhost:5501').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
