@@ -36,7 +36,7 @@ st.title("📰 Fake News Detector")
 st.markdown("Analyze news content to determine if it's **REAL** or **FAKE** using an ML model.")
 
 with st.expander("ℹ️ How it works"):
-    st.write("This app uses text preprocessing + a trained Logistic Regression model to predict fake news.")
+    st.write("This app uses text preprocessing + a trained Naives Bayes model to predict fake news.")
 
 text_input = st.text_area("Paste your article text here:", height=250)
 
