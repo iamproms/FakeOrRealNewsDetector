@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, HttpUrl
 import joblib
 import nltk
@@ -12,99 +14,82 @@ import time
 from bs4 import BeautifulSoup
 import requests
 
-from fastapi.middleware.cors import CORSMiddleware
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("uvicorn.error")
 
-app = FastAPI()
+# Create FastAPI app
+app = FastAPI(
+    title="Fake News Detector API",
+    description="Upload news text and get a FAKE/REAL prediction powered by ML.",
+)
 
-# Add this CORS middleware
+# Enable CORS (adjust origins for deployment)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace "*" with specific origins in production
+    allow_origins=["*"],  # Set specific domains in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize logging
-tlogging = logging.getLogger('uvicorn.error')
-logging.basicConfig(level=logging.INFO)
+# Mount static files at /static
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Ensure NLTK data is available: Run these once before deploying
-# nltk.download('stopwords')
-# nltk.download('wordnet')
+# Serve index.html at /
+@app.get("/")
+def serve_index():
+    return FileResponse("static/index.html")
 
-# Text preprocessing setup
+# NLTK setup
 try:
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
 except LookupError:
-    tlogging.error("NLTK resource not found. Make sure stopwords and wordnet corpora are downloaded.")
-    raise
+    nltk.download("stopwords")
+    nltk.download("wordnet")
+    stop_words = set(stopwords.words("english"))
+    lemmatizer = WordNetLemmatizer()
 
+# Load model
+model_path = os.getenv("MODEL_PATH", "fake_news_detector_model.joblib")
+if not os.path.exists(model_path):
+    log.error(f"Model file not found at {model_path}")
+    raise FileNotFoundError(f"Model file not found at {model_path}")
+model = joblib.load(model_path)
+
+# Text preprocessing
 def clean_text(text: str) -> str:
-    # Lowercase and remove URLs
     text = text.lower()
-    text = re.sub(r'http\S+|www\.\S+', '', text)
-    # Remove non-letters
-    text = re.sub(r'[^a-z ]', '', text)
-    # Simple whitespace tokenization (avoiding NLTK punkt dependency)
+    text = re.sub(r"http\S+|www\.\S+", "", text)
+    text = re.sub(r"[^a-z ]", "", text)
     tokens = text.split()
-    # Lemmatize and remove stopwords
     cleaned = [lemmatizer.lemmatize(tok) for tok in tokens if tok not in stop_words]
-    return ' '.join(cleaned)
+    return " ".join(cleaned)
 
-# Load trained model
-t_model_path = os.getenv('MODEL_PATH', 'fake_news_detector_model.joblib')
-if not os.path.exists(t_model_path):
-    tlogging.error(f"Model file not found at {t_model_path}. Please ensure the path is correct.")
-    raise FileNotFoundError(f"Model file not found at {t_model_path}")
-model = joblib.load(t_model_path)
-
-# FastAPI app
-title = "Fake News Detector API"
-description = "Upload news text and get a FAKE/REAL prediction powered by a Logistic Regression model."
-app = FastAPI(title=title, description=description)
-
-# Setup CORS
-origins = os.getenv('CORS_ORIGINS', 'http://127.0.0.1:5501,http://localhost:5501').split(',')
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Request schema
+# Schemas
 class NewsInput(BaseModel):
     text: str
-
-@app.post("/predict")
-def predict_news(news: NewsInput):
-    try:
-        tlogging.info(f"Received text of length {len(news.text)} for prediction.")
-        cleaned = clean_text(news.text)
-        time.sleep(2)  
-        pred = model.predict([cleaned])[0]
-        label = "FAKE" if pred == 1 else "REAL"
-        tlogging.info(f"Prediction: {label}")
-        return {"prediction": label}
-    except Exception as e:
-        tlogging.exception("Error during prediction:")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Fake News Detector API. POST /predict with your text."}
-
-
-
-
 
 class ScrapeRequest(BaseModel):
     url: HttpUrl
     follow_redirects: bool = True
 
+# Prediction route
+@app.post("/predict")
+def predict_news(news: NewsInput):
+    try:
+        log.info(f"Received text of length {len(news.text)}")
+        cleaned = clean_text(news.text)
+        time.sleep(1)  # Simulated delay
+        pred = model.predict([cleaned])[0]
+        label = "FAKE" if pred == 1 else "REAL"
+        return {"prediction": label}
+    except Exception as e:
+        log.exception("Prediction failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Scrape route
 @app.post("/scrape")
 def scrape_website(req: ScrapeRequest):
     try:
@@ -114,12 +99,7 @@ def scrape_website(req: ScrapeRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
     soup = BeautifulSoup(response.text, "html.parser")
-
-    # Remove script and style elements
     for tag in soup(["script", "style", "noscript"]):
         tag.extract()
-
-    # Get visible text
     text = soup.get_text(separator="\n", strip=True)
-
     return {"text": text}
