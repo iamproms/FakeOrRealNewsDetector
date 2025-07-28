@@ -1,17 +1,30 @@
-# ✅ These imports are okay
 import streamlit as st
 import joblib
 import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+import os
 
-# ✅ THIS MUST BE THE FIRST Streamlit COMMAND
 st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
 
-# ✅ Only now can you do everything else
-nltk.download("stopwords")
-nltk.download("wordnet")
+import os
+
+nltk_data_path = os.path.join(os.path.dirname(__file__), "nltk_data")
+nltk.data.path.append(nltk_data_path)
+
+try:
+    stop_words = set(stopwords.words("english"))
+except LookupError:
+    st.error("Missing NLTK stopwords. Please download 'stopwords' manually.")
+    st.stop()
+
+try:
+    WordNetLemmatizer()
+except LookupError:
+    st.error("Missing WordNet lemmatizer. Please download 'wordnet' manually.")
+    st.stop()
+
 
 # Setup
 stop_words = set(stopwords.words("english"))
@@ -31,7 +44,6 @@ def clean_text(text):
     cleaned = [lemmatizer.lemmatize(tok) for tok in tokens if tok not in stop_words]
     return " ".join(cleaned)
 
-# ✅ Streamlit UI starts here (no duplicate set_page_config!)
 st.title("📰 Fake News Detector")
 st.markdown("Analyze news content to determine if it's **REAL** or **FAKE** using an ML model.")
 
