@@ -1,364 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fake News Detector</title>
-    <!-- Materialize CSS -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-      rel="stylesheet"
-    />
-    <!-- Material Icons -->
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector | Professional Analysis</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-      body {
-        background-color: #121212;
-        color: #e0e0e0;
-        font-family: "Segoe UI", sans-serif;
-        display: flex;
-        min-height: 100vh;
-        flex-direction: column;
-      }
+        :root {
+            --primary: #00bcd4;
+            --primary-dark: #0097a7;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --info: #3b82f6;
+        }
 
-      main {
-        flex: 1 0 auto;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      nav {
-        background-color: #1e1e1e !important;
-        border-bottom: 1px solid #333;
-      }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-      nav .brand-logo {
-        font-weight: bold;
-        color: #00bcd4 !important;
-      }
+        header {
+            padding: 2rem 1rem;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), transparent);
+        }
 
-      .hero {
-        background: linear-gradient(145deg, #00bcd4, #1d3a49);
-        color: #ffffff;
-        padding: 80px 0;
-        text-align: center;
-      }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
 
-      .hero h1 {
-        font-size: 3rem;
-        margin-bottom: 0.5rem;
-        color: #00bcd4;
-      }
+        p.subtitle {
+            font-weight: 300;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-      .hero p {
-        font-size: 1.2rem;
-        color: #b0bec5;
-      }
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
 
-      .card {
-        background-color: #1e1e1e;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(0, 188, 212, 0.1);
-      }
+        .card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-      .card-title {
-        color: #00bcd4;
-      }
+        .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        }
 
-      textarea.materialize-textarea {
-        color: #fff;
-      }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
 
-      input:focus,
-      textarea:focus {
-        border-bottom: 1px solid #00bcd4 !important;
-        box-shadow: 0 1px 0 0 #00bcd4 !important;
-      }
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
-      .btn {
-        background-color: #00bcd4 !important;
-        border-radius: 25px;
-        padding: 0 25px;
-      }
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            background-color: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-      #result-text {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #81c784;
-      }
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+        }
 
-      footer.page-footer {
-        background-color: #1e1e1e;
-      }
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
 
-      footer h5,
-      footer p {
-        color: #b0bec5;
-      }
-      /* Light mode (default) */
-      body {
-        background-color: #ffffff;
-        color: #000;
-      }
+        button {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s active;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-      /* Navbar Light */
-      nav {
-        background-color: #2196f3 !important;
-      }
+        button:hover {
+            background-color: var(--primary-dark);
+        }
 
-      .card {
-        background-color: #f5f5f5;
-      }
+        button:active {
+            transform: scale(0.98);
+        }
 
-      .card-title {
-        color: #1976d2;
-      }
+        button:disabled {
+            background-color: var(--text-dim);
+            cursor: not-allowed;
+        }
 
-      textarea.materialize-textarea {
-        color: #000;
-      }
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
 
-      footer.page-footer {
-        background-color: #2196f3;
-      }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 188, 212, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
 
-      footer h5,
-      footer p {
-        color: #e0e0e0;
-      }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
-      /* ------------------------------
-   Dark Mode Overrides
-------------------------------- */
-      body.dark-mode {
-        background-color: #121212;
-        color: #e0e0e0;
-      }
+        .result-area {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
 
-      body.dark-mode nav {
-        background-color: #1e1e1e !important;
-      }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-      body.dark-mode .brand-logo {
-        color: #00bcd4 !important;
-      }
+        .result-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            color: var(--text-dim);
+        }
 
-      body.dark-mode .hero {
-        background: linear-gradient(145deg, #1f1f1f, #2b2b2b);
-        color: #ffffff;
-      }
+        .result-value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
 
-      body.dark-mode .hero h1 {
-        color: #00bcd4;
-      }
+        .result-fake {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
 
-      body.dark-mode .hero p {
-        color: #b0bec5;
-      }
+        .result-real {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
 
-      body.dark-mode .card {
-        background-color: #1e1e1e;
-      }
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
 
-      body.dark-mode .card-title {
-        color: #00bcd4;
-      }
-
-      body.dark-mode textarea.materialize-textarea {
-        color: #fff;
-      }
-
-      body.dark-mode input:focus,
-      body.dark-mode textarea:focus {
-        border-bottom: 1px solid #00bcd4 !important;
-        box-shadow: 0 1px 0 0 #00bcd4 !important;
-      }
-
-      body.dark-mode .btn {
-        background-color: #00bcd4 !important;
-      }
-
-      body.dark-mode #result-text {
-        color: #81c784;
-      }
-
-      body.dark-mode footer.page-footer {
-        background-color: #1e1e1e;
-      }
-
-      body.dark-mode footer h5,
-      body.dark-mode footer p {
-        color: #b0bec5;
-      }
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
     </style>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="blue darken-2">
-      <div class="nav-wrapper container">
-        <a href="#" class="brand-logo">Fake News Detector</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="#about">About</a></li>
-          <li><a href="#detector">Detector</a></li>
-          <li>
-            <div class="switch">
-              <label style="color: white">
-                Light
-                <input type="checkbox" id="theme-toggle" />
-                <span class="lever"></span>
-                Dark
-              </label>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
+</head>
+<body>
+    <header>
+        <h1>Fake News Detector</h1>
+        <p class="subtitle">Utilizing machine learning to analyze and verify news article authenticity with precision.</p>
+    </header>
 
     <main>
-      <!-- Hero Section -->
-      <section class="hero center-align" id="about">
-        <div class="container">
-          <h1>Detect Fake News Instantly</h1>
-          <p>
-            Our AI-powered application analyzes your text and tells you whether
-            it's likely to be fake or real news. Easy, fast, and reliable.
-          </p>
-        </div>
-      </section>
-
-      <div class="container" id="detector">
-        <!-- Input Card -->
-        <div class="card input-area">
-          <div class="card-content">
-            <span class="card-title">Enter Your Article Text</span>
-            <div class="row">
-              <div class="input-field col s12">
-                <textarea
-                  id="news-text"
-                  class="materialize-textarea"
-                  data-length="10000"
-                ></textarea>
-                <label for="news-text">Article Content</label>
-              </div>
+        <div class="card">
+            <div class="input-group">
+                <label for="news-text">Article Text</label>
+                <textarea id="news-text" placeholder="Paste your news article content here..."></textarea>
             </div>
-            <div class="right-align">
-              <button
-                id="analyze-btn"
-                class="btn waves-effect waves-light blue darken-2"
-              >
-                <i class="material-icons left">search</i>Analyze
-              </button>
+            <div class="actions">
+                <button id="analyze-btn">Analyze Content</button>
             </div>
-          </div>
         </div>
 
-        <!-- Detecting Loader -->
-        <div
-          id="loading-area"
-          class="center-align"
-          style="display: none; margin-top: 30px"
-        >
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left"><div class="circle"></div></div>
-              <div class="gap-patch"><div class="circle"></div></div>
-              <div class="circle-clipper right"><div class="circle"></div></div>
-            </div>
-          </div>
-          <p style="margin-top: 10px; color: #42a5f5">Detecting...</p>
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            <p>Processing analysis...</p>
         </div>
 
-        <!-- Result Card -->
-        <div class="card result-area" style="display: none">
-          <div class="card-content">
-            <span class="card-title">Prediction Result</span>
-            <p id="result-text" class="flow-text"></p>
-          </div>
+        <div id="result" class="result-area">
+            <div class="result-label">Prediction Result</div>
+            <div id="result-text" class="result-value"></div>
         </div>
-      </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="page-footer blue darken-2">
-      <div class="container">
-        <div class="row">
-          <div class="col s12">
-            <h5 class="white-text">Fake News Detector</h5>
-            <p class="grey-text text-lighten-4">
-              Built with FastAPI, scikit-learn, and Materialize CSS.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="footer-copyright">
-        <div class="container center-align">© 2025 Fake News Detector</div>
-      </div>
+    <footer>
+        <p>Built with FastAPI, Scikit-learn, and NLTK.</p>
+        <p>&copy; 2025 Fake News Detector</p>
     </footer>
 
-    <!-- Materialize JS & Initialization -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        M.textareaAutoResize(document.getElementById("news-text"));
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const newsText = document.getElementById('news-text');
+        const loader = document.getElementById('loader');
+        const resultArea = document.getElementById('result');
+        const resultText = document.getElementById('result-text');
 
-        const toggle = document.getElementById("theme-toggle");
-        toggle.addEventListener("change", () => {
-          document.body.classList.toggle("dark-mode", toggle.checked);
-        });
-      });
+        analyzeBtn.addEventListener('click', async () => {
+            const text = newsText.value.trim();
+            if (!text) return;
 
-      document.addEventListener("DOMContentLoaded", function () {
-        M.textareaAutoResize(document.getElementById("news-text"));
-      });
+            // UI State
+            analyzeBtn.disabled = true;
+            resultArea.style.display = 'none';
+            loader.style.display = 'block';
 
-      document
-        .getElementById("analyze-btn")
-        .addEventListener("click", async () => {
-          const text = document.getElementById("news-text").value.trim();
-          if (!text) {
-            M.toast({
-              html: "Please enter some text to analyze.",
-              classes: "red",
-            });
-            return;
-          }
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text }),
+                });
 
-          const resultCard = document.querySelector(".result-area");
-          const resultText = document.getElementById("result-text");
-          const loadingArea = document.getElementById("loading-area");
+                if (!response.ok) throw new Error('Prediction request failed');
+                const data = await response.json();
 
-          resultCard.style.display = "none";
-          loadingArea.style.display = "block";
-
-          try {
-            // Fake delay for animation effect
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            const response = await fetch("http://127.0.0.1:8000/predict", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text }),
-            });
-
-            if (!response.ok) throw new Error("Network response was not ok");
-            const data = await response.json();
-
-            resultText.textContent =
-              data.prediction === "FAKE"
-                ? "⚠️ The article is likely FAKE!"
-                : "✅ The article appears to be REAL.";
-
-            loadingArea.style.display = "none";
-            resultCard.style.display = "block";
-
-            // Smooth scroll
-            resultCard.scrollIntoView({ behavior: "smooth" });
-          } catch (err) {
-            loadingArea.style.display = "none";
-            M.toast({ html: "Error: " + err.message, classes: "red" });
-          }
+                resultText.textContent = data.prediction === 'FAKE' ? 'Likely FAKE' : 'Appears REAL';
+                
+                resultArea.classList.remove('result-fake', 'result-real');
+                resultArea.classList.add(data.prediction === 'FAKE' ? 'result-fake' : 'result-real');
+                
+                loader.style.display = 'none';
+                resultArea.style.display = 'block';
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                console.error(err);
+                loader.style.display = 'none';
+                alert('An error occurred during analysis. Please try again.');
+            } finally {
+                analyzeBtn.disabled = false;
+            }
         });
     </script>
-  </body>
+</body>
 </html>

@@ -1,0 +1,7 @@
+GitHub Repository Metadata
+
+About Description:
+An AI-powered application for detecting fake news using machine learning. Features a FastAPI backend with URL scraping capabilities and two frontend options: a modern web interface and an interactive Streamlit dashboard.
+
+Topics:
+machine-learning, fake-news-detector, fastapi, streamlit, natural-language-processing, nlp, scikit-learn, python, news-analysis, web-scraping
