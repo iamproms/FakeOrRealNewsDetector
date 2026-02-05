@@ -15,15 +15,13 @@ nltk.data.path.append(nltk_data_path)
 
 try:
     stop_words = set(stopwords.words("english"))
+    lemmatizer = WordNetLemmatizer()
 except LookupError:
-    st.error("Missing NLTK stopwords. Please download 'stopwords' manually.")
-    st.stop()
-
-try:
-    WordNetLemmatizer()
-except LookupError:
-    st.error("Missing WordNet lemmatizer. Please download 'wordnet' manually.")
-    st.stop()
+    with st.spinner("Downloading required NLP data..."):
+        nltk.download("stopwords")
+        nltk.download("wordnet")
+        stop_words = set(stopwords.words("english"))
+        lemmatizer = WordNetLemmatizer()
 
 
 # Setup

@@ -2,6 +2,8 @@
 
 An AI-powered application for detecting fake news using machine learning. This project provides a robust framework for analyzing news articles and determining their authenticity through natural language processing.
 
+Live Demo: [https://verifynews.streamlit.app/](https://verifynews.streamlit.app/)
+
 ## Table of Contents
 - Introduction
 - Features
